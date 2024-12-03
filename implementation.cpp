@@ -7,7 +7,8 @@ struct Request {
     int duration;
     int max_waiting_time;
     vector<int> resources;       // Resources required [R1, R2, R3]
-    vector<double> unit_prices;  // Unit price of resources [P1, P2, P3]
+    vector<double> unit_prices; 
+    vector<int> utilized;// Unit price of resources [P1, P2, P3]
     double priority_metric;      // Alpha metric
     bool admitted;               // Admission status
 };
@@ -230,7 +231,7 @@ void proposedSliceAdmissionControl(int total_slots, vector<Request>& requests, v
         // vector<int> actual_utilised_resource //here we can actually change the actually utilised resource, maybe by hard coding or something
         for (const auto& acc : acceptedRequests) {
             for (int j = 0; j < 3; ++j) {
-                shareable_resources[j] += max(0, acc.resources[j] - current_resources[j]);
+                shareable_resources[j] += max(0, acc.resources[j] - acc.utilized[j]);
             } 
         }
 
@@ -317,10 +318,10 @@ int main() {
     vector<int> available_resources = {2000, 2000, 2000}; // Initial capacity of the InP for 3 resources
 
     vector<Request> requests = {
-        {1, 1, 10, 10, {2000, 2000, 200}, {5, 4, 3}, 0, false},  // High cost, high profit, long duration
-        {2, 1, 200, 10, {500, 500, 500}, {5, 4, 3}, 0, false},       // Low cost, moderate profit, short duration
-        {3, 3, 30000, 10, {700, 700, 700}, {6, 5, 4}, 0, false},       // Medium cost, high profit, medium duration
-        {4, 5, 4, 10, {400, 400, 400}, {5, 4, 3}, 0, false},       // Low cost, moderate profit, short duration
+        {1, 1, 10, 10, {2000, 2000, 200}, {5, 4, 3},{1000,1200,50}, 0, false},  // High cost, high profit, long duration
+        {2, 1, 200, 10, {500, 500, 500}, {5, 4, 3},{175,186,320}, 0, false},       // Low cost, moderate profit, short duration
+        {3, 3, 30000, 10, {700, 700, 700}, {5, 4, 3},{700, 700, 700},0, false},       // Medium cost, high profit, medium duration
+        {4, 5, 4, 10, {400, 400, 400}, {5, 4, 3},{230,175,230}, 0, false},       // Low cost, moderate profit, short duration
     };
 
     proposedSliceAdmissionControl(total_slots, requests, available_resources);
